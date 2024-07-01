@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 
 import os
 import sys
+import joblib
 from pathlib import Path
 
 project_root = Path(__file__).parent.parent
@@ -19,6 +21,7 @@ from IPython.display import Image, display
 
 import matplotlib.pyplot as plt
 import plotly.express as px
+import plotly.graph_objects as go
 
 from notebooks import config
 from notebooks.functions import trim_and_lower
@@ -29,6 +32,11 @@ context = ssl.create_default_context(cafile=certifi.where())
 
 # Now you can access the environment variables
 apikey = os.getenv('FMP_SECRET_KEY')
+
+# Other variables
+indicators = ['dema', 'tema', 'williams', 'rsi', 'adx']
+features = ['vwap', 'dema', 'tema', 'williams', 'rsi', 'ratingScore', 'minus_10_price', 'minus_5_price', 'minus_4_price', 'minus_3_price', 'minus_2_price']
+close = ['close']
 
 
 def stock_screener(apikey=apikey, **kwargs):
@@ -49,20 +57,33 @@ def full_quote_url(ticker, apikey=apikey):
 	url = f'{endpoint}{ticker}?apikey={apikey}'
 	return url
 
-def historical_url(ticker, apikey=apikey):
+def historical_url(ticker, apikey=apikey, **kwargs):
 	endpoint = 'https://financialmodelingprep.com/api/v3/historical-price-full/'
-	url = f'{endpoint}{ticker}?apikey={apikey}'
+	params = {'apikey': apikey}
+	params.update(kwargs)
+	query_string = urlencode(params)
+	#url = f'{endpoint}{ticker}?apikey={query_string}'
+	url = f'{endpoint}{ticker}?{query_string}'
 	return url
 
-def technical_indicator_url(timeframe, ticker, ind_type, period, apikey=apikey):
+def technical_indicator_url(timeframe, ticker, ind_type, period, apikey=apikey, **kwargs):
 	endpoint = 'https://financialmodelingprep.com/api/v3/technical_indicator/'
-	ticker = ticker
-	url = f'{endpoint}{timeframe}/{ticker}?type={ind_type}&period={period}&apikey={apikey}'
+	params = {
+		'apikey': apikey,
+		'type': ind_type,
+		'period': period
+	}
+	params.update(kwargs)
+	query_string = urlencode(params)
+	url = f'{endpoint}{timeframe}/{ticker}?{query_string}'
 	return url
 
-def historical_rating_url(ticker, apikey=apikey):
+def historical_rating_url(ticker, apikey=apikey, **kwargs):
 	endpoint = 'https://financialmodelingprep.com/api/v3/historical-rating/'
-	url = f'{endpoint}{ticker}?apikey={apikey}'
+	params = {'apikey': apikey}
+	params.update(kwargs)
+	query_string = urlencode(params)
+	url = f'{endpoint}{ticker}?{query_string}'
 	return url
 
 def get_jsonparsed_data(url, retries=3, timeout=10):
@@ -113,10 +134,10 @@ def display_company_logo(ticker, apikey=apikey, retries=3, timeout=10):
 	return None
 
 
-def get_indicators(timeframe, ticker, indicators, period, apikey=apikey):
+def get_indicators(ticker, indicators=indicators, timeframe='1day', period=14, apikey=apikey, **kwargs):
 	urls = {}
 	for indicator in indicators:
-		url = technical_indicator_url(timeframe, ticker, indicator, period, apikey)
+		url = technical_indicator_url(timeframe, ticker, indicator, period, apikey, **kwargs)
 		urls[indicator] = url
 	
 	ind_data = {}
@@ -128,20 +149,14 @@ def get_indicators(timeframe, ticker, indicators, period, apikey=apikey):
 	df_list = []
 	for indicator, data in ind_data.items():
 		df = pd.DataFrame(data)
-		#display(df.head(2))
 		df = df.set_index('date')
-		#display(df.head(2))
 		df_list.append(df)
 
 	final_df = pd.concat(df_list, axis=1, join='outer')
+	final_df.index = pd.to_datetime(final_df.index)
 		
 	return final_df
 
-
-#def stock_summary_table(stock_data):
-#	columns = stock_data[0]
-#	table = pd.DataFrame(stock_data)[['symbol', 'name', 'price', 'marketCap', 'exchange']].set_index('symbol', drop=True)
-#	return table
 
 
 def stock_summary_table(stock_data):
@@ -150,3 +165,132 @@ def stock_summary_table(stock_data):
 	melted = table.melt().set_index('variable', drop=True)
 	return melted
 
+
+def get_all_data(ticker, **kwargs):
+	data = get_jsonparsed_data(historical_url(ticker, **kwargs))
+	data = data['historical']
+	
+	# List of keys to keep in each dictionary
+	keys_to_keep = ['date', 'open', 'high', 'low', 'close', 'volume', 'vwap']
+
+	# Modify each entry in the historical list
+	for entry in data:
+			
+		# Keep only the necessary keys
+		for key in list(entry.keys()):
+			if key not in keys_to_keep:
+				del entry[key]
+
+	data = pd.DataFrame(data).set_index('date', drop=True)
+	data.index = pd.to_datetime(data.index)
+	return data
+
+
+def get_historical_rating(ticker):
+	data = get_jsonparsed_data(historical_rating_url('GOOG'))
+	data = pd.DataFrame(data)[['date', 'ratingScore']]
+	data = data.set_index('date', drop=True)
+	data = data[data.index >= '2024-01-01']
+	data.index = pd.to_datetime(data.index)
+	data = data.sort_values('date')
+	return data
+
+
+def lagging_features_target(df):
+	df = df.copy()
+	df['minus_10_price'] = df.close.shift(10)
+	df['minus_5_price'] = df.close.shift(5)
+	df['minus_5_price'] = df.close.shift(5)
+	df['minus_4_price'] = df.close.shift(4)
+	df['minus_3_price'] = df.close.shift(3)
+	df['minus_2_price'] = df.close.shift(2)
+	df = df.dropna()
+	return df
+
+
+@st.cache_data
+def combine_data(ticker, **kwargs):
+	price_data = get_all_data(ticker, **kwargs)
+	ind_data = get_indicators(ticker, **kwargs)
+	hist_rating_data = get_historical_rating(ticker)
+	df = pd.concat([price_data, ind_data, hist_rating_data], axis=1)
+	df = lagging_features_target(df)
+	df = df.asfreq('D', method='ffill')
+	return df
+
+
+def predict_df(pred, close):
+	predictions = close.copy()
+	predictions['prediction'] = pred
+	full_index = pd.date_range(start=predictions.index.min(), end=predictions.index.max() + pd.Timedelta(days=3), freq='D')
+	predictions = predictions.reindex(full_index)
+	predictions['prediction'] = predictions['prediction'].shift(3)
+	predictions.close = predictions.close.fillna(predictions.prediction)
+	return predictions[['close']]
+
+
+def feature_close_split(df, features=features, close=close):
+	features = df[features]
+	close = df[close]
+	return features, close
+	
+
+def predict(ticker, df):
+	features, close = feature_close_split(df)
+	models = {
+		'GOOG': 'alphabet_stacking_regressor_model.pkl',
+		'AMZN': 'amazon_stacking_regressor_model.pkl',
+		'AAPL': 'apple_stacking_regressor_model.pkl',
+		'META': 'meta_stacking_regressor_model.pkl',
+		'MSFT': 'microsoft_stacking_regressor_model.pkl',
+		'NVDA': 'nvidia_stacking_regressor_model.pkl',
+		'TSLA': 'tesla_stacking_regressor_model.pkl'
+	}
+
+	scalers = {
+		'GOOG': 'alphabet_normalizer.pkl',
+		'AMZN': 'amazon_normalizer.pkl',
+		'AAPL': 'apple_normalizer.pkl',
+		'META': 'meta_normalizer.pkl',
+		'MSFT': 'microsoft_normalizer.pkl',
+		'NVDA': 'nvidia_normalizer.pkl',
+		'TSLA': 'tesla_normalizer.pkl'
+	}
+
+	scaler = joblib.load('../scalers/' + scalers[ticker])
+	model = joblib.load('../models/' + models[ticker])
+
+	# Normalize features
+	features_norm = scaler.transform(features)
+	features_norm_df = pd.DataFrame(features_norm, columns=features.columns, index=features.index)
+
+	# Make predictions
+	pred = model.predict(features_norm_df)
+
+	df = predict_df(pred, close)
+
+	return df
+
+
+def make_chart(df):
+    predicted_points = 3
+    
+    fig = go.Figure()
+    
+    # Add the actual data line
+    fig.add_trace(go.Scatter(x=df.index[:-predicted_points], y=df['close'][:-predicted_points], mode='lines', name='Actual'))
+    
+    # Add the predicted data line
+    fig.add_trace(go.Scatter(x=df.index[-predicted_points-1:], y=df['close'][-predicted_points-1:], mode='lines', name='Predicted', line=dict(color='red')))
+    
+    # Highlight the predicted section
+    fig.add_vrect(
+        x0=df.index[-predicted_points-1], x1=df.index[-1],
+        fillcolor="red", opacity=0.2,
+        layer="below", line_width=0
+    )
+    
+    fig.update_layout(xaxis_title='Date',
+                      yaxis_title='Price')
+
+    return fig
