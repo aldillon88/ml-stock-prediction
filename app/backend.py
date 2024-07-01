@@ -34,7 +34,7 @@ context = ssl.create_default_context(cafile=certifi.where())
 apikey = os.getenv('FMP_SECRET_KEY')
 
 # Other variables
-indicators = ['dema', 'tema', 'williams', 'rsi', 'adx']
+indicators = ['dema', 'tema', 'williams', 'rsi']
 features = ['vwap', 'dema', 'tema', 'williams', 'rsi', 'ratingScore', 'minus_10_price', 'minus_5_price', 'minus_4_price', 'minus_3_price', 'minus_2_price']
 close = ['close']
 
