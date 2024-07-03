@@ -22,6 +22,7 @@ from IPython.display import Image, display
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from notebooks import config
 from notebooks.functions import trim_and_lower
@@ -35,7 +36,7 @@ apikey = os.getenv('FMP_SECRET_KEY')
 
 # Other variables
 indicators = ['dema', 'tema', 'williams', 'rsi']
-features = ['vwap', 'dema', 'tema', 'williams', 'rsi', 'ratingScore', 'minus_10_price', 'minus_5_price', 'minus_4_price', 'minus_3_price', 'minus_2_price']
+features = ['vwap', 'dema', 'tema', 'williams', 'rsi', 'minus_10_price', 'minus_5_price', 'minus_4_price', 'minus_3_price', 'minus_2_price']
 close = ['close']
 
 
@@ -62,7 +63,6 @@ def historical_url(ticker, apikey=apikey, **kwargs):
 	params = {'apikey': apikey}
 	params.update(kwargs)
 	query_string = urlencode(params)
-	#url = f'{endpoint}{ticker}?apikey={query_string}'
 	url = f'{endpoint}{ticker}?{query_string}'
 	return url
 
@@ -76,14 +76,6 @@ def technical_indicator_url(timeframe, ticker, ind_type, period, apikey=apikey, 
 	params.update(kwargs)
 	query_string = urlencode(params)
 	url = f'{endpoint}{timeframe}/{ticker}?{query_string}'
-	return url
-
-def historical_rating_url(ticker, apikey=apikey, **kwargs):
-	endpoint = 'https://financialmodelingprep.com/api/v3/historical-rating/'
-	params = {'apikey': apikey}
-	params.update(kwargs)
-	query_string = urlencode(params)
-	url = f'{endpoint}{ticker}?{query_string}'
 	return url
 
 def get_jsonparsed_data(url, retries=3, timeout=10):
@@ -158,10 +150,20 @@ def get_indicators(ticker, indicators=indicators, timeframe='1day', period=14, a
 	return final_df
 
 
+@st.cache_data
+def stock_screener_table(ticker, **kwargs):
+	screen = get_jsonparsed_data(stock_screener(**kwargs))
+	df = pd.DataFrame(screen)[['symbol', 'companyName', 'exchangeShortName', 'country', 'beta']]
+	df = df[~df.symbol.str.contains(ticker)].set_index('symbol')
+	df.columns = ['Company', 'Exchange', 'Country', 'Beta']
+	#df = df.drop(ticker)
+	df = df.head(5)
+	return df
 
-def stock_summary_table(stock_data):
-	columns = stock_data[0]
-	table = pd.DataFrame(stock_data)[['symbol', 'companyName', 'price', 'sector', 'industry', 'exchangeShortName', 'beta']]#.set_index('symbol', drop=True)
+
+def stock_summary_table(profile):
+	#columns = profile[0]
+	table = pd.DataFrame(profile)[['symbol', 'companyName', 'price', 'sector', 'industry', 'exchangeShortName', 'beta']]#.set_index('symbol', drop=True)
 	melted = table.melt().set_index('variable', drop=True)
 	return melted
 
@@ -183,23 +185,13 @@ def get_all_data(ticker, **kwargs):
 
 	data = pd.DataFrame(data).set_index('date', drop=True)
 	data.index = pd.to_datetime(data.index)
-	return data
-
-
-def get_historical_rating(ticker):
-	data = get_jsonparsed_data(historical_rating_url('GOOG'))
-	data = pd.DataFrame(data)[['date', 'ratingScore']]
-	data = data.set_index('date', drop=True)
-	data = data[data.index >= '2024-01-01']
-	data.index = pd.to_datetime(data.index)
-	data = data.sort_values('date')
+	data = data.sort_index()
 	return data
 
 
 def lagging_features_target(df):
 	df = df.copy()
 	df['minus_10_price'] = df.close.shift(10)
-	df['minus_5_price'] = df.close.shift(5)
 	df['minus_5_price'] = df.close.shift(5)
 	df['minus_4_price'] = df.close.shift(4)
 	df['minus_3_price'] = df.close.shift(3)
@@ -212,8 +204,7 @@ def lagging_features_target(df):
 def combine_data(ticker, **kwargs):
 	price_data = get_all_data(ticker, **kwargs)
 	ind_data = get_indicators(ticker, **kwargs)
-	hist_rating_data = get_historical_rating(ticker)
-	df = pd.concat([price_data, ind_data, hist_rating_data], axis=1)
+	df = pd.concat([price_data, ind_data], axis=1)
 	df = lagging_features_target(df)
 	df = df.asfreq('D', method='ffill')
 	return df
@@ -272,25 +263,80 @@ def predict(ticker, df):
 	return df
 
 
-def make_chart(df):
-    predicted_points = 3
-    
-    fig = go.Figure()
-    
-    # Add the actual data line
-    fig.add_trace(go.Scatter(x=df.index[:-predicted_points], y=df['close'][:-predicted_points], mode='lines', name='Actual'))
-    
-    # Add the predicted data line
-    fig.add_trace(go.Scatter(x=df.index[-predicted_points-1:], y=df['close'][-predicted_points-1:], mode='lines', name='Predicted', line=dict(color='red')))
-    
-    # Highlight the predicted section
-    fig.add_vrect(
-        x0=df.index[-predicted_points-1], x1=df.index[-1],
-        fillcolor="red", opacity=0.2,
-        layer="below", line_width=0
-    )
-    
-    fig.update_layout(xaxis_title='Date',
-                      yaxis_title='Price')
+def make_chart(df, stock_data):
+	predicted_points = 3
+	rsi = stock_data['rsi']
+	rsi = rsi.reindex(df.index)
+	
+	fig = go.Figure()
 
-    return fig
+	# Create the subplots
+	fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[0.75, 0.25]
+					)
+	
+	# Add the actual data line
+	fig.add_trace(go.Scatter(x=df.index[:-predicted_points], y=df['close'][:-predicted_points], mode='lines', name='Actual'),row=1, col=1)
+	
+	# Add the predicted data line
+	fig.add_trace(go.Scatter(x=df.index[-predicted_points-1:], y=df['close'][-predicted_points-1:], mode='lines', name='Predicted', line=dict(color='green')),row=1, col=1)
+	
+	# Add rsi line
+	fig.add_trace(go.Scatter(x=df.index[:-predicted_points], y=rsi, mode='lines', name='RSI'),row=2, col=1)
+
+	# Add oversold and overbought markers
+	oversold = 30
+	overbought = 70
+
+	fig.add_hline(
+		y=oversold,
+		line_dash='dot',
+		line_color='green',
+		label=dict(
+			text='oversold',
+			textposition='start',
+			font=dict(size=10, color='green'),
+			yanchor='top',
+		),
+		row=2,
+		col=1
+	)
+
+	fig.add_hline(
+		y=overbought,
+		line_dash="dot",
+		line_color='red',
+		label=dict(
+			text="overbought",
+			textposition="start",
+			font=dict(size=10, color="red"),
+			yanchor="bottom",
+		),
+		row=2,
+		col=1
+	)
+
+
+	fig.add_vrect(
+		x0=df.index[-predicted_points-1], x1=df.index[-1],
+		fillcolor="green", opacity=0.2,
+		layer="below", line_width=0,
+		xref="x", yref="paper"
+	)
+	
+	fig.update_layout(
+		#xaxis_title='Date',
+		yaxis=dict(
+			title='Price',
+			titlefont=dict(size=12),
+		),
+
+		yaxis2=dict(
+			title='RSI',
+			titlefont=dict(size=12),
+			range=[0, 100],
+			dtick=20
+		),
+		height=600
+	)
+
+	return fig
