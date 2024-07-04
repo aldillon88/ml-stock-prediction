@@ -24,7 +24,7 @@ def main():
 		'to': today_date
 	}
 
-	st.title('TickerT rend')
+	st.title('Ticker Trend')
 	st.subheader('Charts & Predictions', divider='rainbow')
 
 	with st.sidebar:
