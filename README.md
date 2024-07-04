@@ -56,10 +56,10 @@ Other: `IPython`, `kaleido`.
 
 ### Project Structure
 |---project\
-|		|---app\
-|			|---__init__.py\
-|			|---app.py\
-|			|---backend.py\
+|&nbsp;&nbsp;|---app\
+|&nbsp;&nbsp;&nbsp;|---__init__.py\
+|&nbsp;&nbsp;&nbsp;|---app.py\
+|&nbsp;&nbsp;&nbsp;|---backend.py\
 |		|---data\
 |			|---clean\
 |				|---alphabet_training_data.csv\
@@ -100,6 +100,6 @@ Other: `IPython`, `kaleido`.
 |		|---requirements-dev.in\
 |		|---requirements-dev.txt\
 |		|---requirements.in\
-|		|---requirements.txt\
+|		|---requirements.txt
 
 
