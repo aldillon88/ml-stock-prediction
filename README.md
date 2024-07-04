@@ -55,51 +55,51 @@ Other: `IPython`, `kaleido`.
 * Underneath the charts is a list of stocks that are similar to the one chosen. This list is also retrieved via the API with the use of some additional parameters to refine the list and ensure its relevance.
 
 ### Project Structure
-|---project
-|		|---app
-|			|---__init__.py
-|			|---app.py
-|			|---backend.py
-|		|---data
-|			|---clean
-|				|---alphabet_training_data.csv
-|				|---amazon_training_data.csv
-|				|---apple_training_data.csv
-|				|---meta_training_data.csv
-|				|---meta_training_data.csv
-|				|---nvidia_training_data.csv
-|				|---tesla_training_data.csv
-|			|---raw
-|		|---images
-|		|---models
-|			|---alphabet_stacking_regressor_model.pkl
-|			|---amazon_stacking_regressor_model.pkl
-|			|---apple_stacking_regressor_model.pkl
-|			|---meta_stacking_regressor_model.pkl
-|			|---microsoft_stacking_regressor_model.pkl
-|			|---nvidia_stacking_regressor_model.pkl
-|			|---tesla_stacking_regressor_model.pkl
-|		|---notebooks
-|			|---__init__.py
-|			|---config.py
-|			|---functions.py
-|			|---model_training.ipynb
-|			|---training_data_collection.ipynb alphabet_normalizer.pkl
-|		|---scalers
-|			|---alphabet_normalizer.pkl
-|			|---amazon_normalizer.pkl
-|			|---apple_normalizer.pkl
-|			|---meta_normalizer.pkl
-|			|---microsoft_normalizer.pkl
-|			|---nvidia_normalizer.pkl
-|			|---tesla_normalizer.pkl
-|		|---slides
-|			|---tickertrend.pdf
-|		|---venv
-|		|---README.md
-|		|---requirements-dev.in
-|		|---requirements-dev.txt
-|		|---requirements.in
-|		|---requirements.txt
+|---project\
+|		|---app\
+|			|---__init__.py\
+|			|---app.py\
+|			|---backend.py\
+|		|---data\
+|			|---clean\
+|				|---alphabet_training_data.csv\
+|				|---amazon_training_data.csv\
+|				|---apple_training_data.csv\
+|				|---meta_training_data.csv\
+|				|---meta_training_data.csv\
+|				|---nvidia_training_data.csv\
+|				|---tesla_training_data.csv\
+|			|---raw\
+|		|---images\
+|		|---models\
+|			|---alphabet_stacking_regressor_model.pkl\
+|			|---amazon_stacking_regressor_model.pkl\
+|			|---apple_stacking_regressor_model.pkl\
+|			|---meta_stacking_regressor_model.pkl\
+|			|---microsoft_stacking_regressor_model.pkl\
+|			|---nvidia_stacking_regressor_model.pkl\
+|			|---tesla_stacking_regressor_model.pkl\
+|		|---notebooks\
+|			|---__init__.py\
+|			|---config.py\
+|			|---functions.py\
+|			|---model_training.ipynb\
+|			|---training_data_collection.ipynb\
+|		|---scalers\
+|			|---alphabet_normalizer.pkl\
+|			|---amazon_normalizer.pkl\
+|			|---apple_normalizer.pkl\
+|			|---meta_normalizer.pkl\
+|			|---microsoft_normalizer.pkl\
+|			|---nvidia_normalizer.pkl\
+|			|---tesla_normalizer.pkl\
+|		|---slides\
+|			|---tickertrend.pdf\
+|		|---venv\
+|		|---README.md\
+|		|---requirements-dev.in\
+|		|---requirements-dev.txt\
+|		|---requirements.in\
+|		|---requirements.txt\
 
 
