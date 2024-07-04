@@ -56,50 +56,50 @@ Other: `IPython`, `kaleido`.
 
 ### Project Structure
 |---project\
-|&nbsp;&nbsp;|---app\
-|&nbsp;&nbsp;&nbsp;|---__init__.py\
-|&nbsp;&nbsp;&nbsp;|---app.py\
-|&nbsp;&nbsp;&nbsp;|---backend.py\
-|		|---data\
-|			|---clean\
-|				|---alphabet_training_data.csv\
-|				|---amazon_training_data.csv\
-|				|---apple_training_data.csv\
-|				|---meta_training_data.csv\
-|				|---meta_training_data.csv\
-|				|---nvidia_training_data.csv\
-|				|---tesla_training_data.csv\
-|			|---raw\
-|		|---images\
-|		|---models\
-|			|---alphabet_stacking_regressor_model.pkl\
-|			|---amazon_stacking_regressor_model.pkl\
-|			|---apple_stacking_regressor_model.pkl\
-|			|---meta_stacking_regressor_model.pkl\
-|			|---microsoft_stacking_regressor_model.pkl\
-|			|---nvidia_stacking_regressor_model.pkl\
-|			|---tesla_stacking_regressor_model.pkl\
-|		|---notebooks\
-|			|---__init__.py\
-|			|---config.py\
-|			|---functions.py\
-|			|---model_training.ipynb\
-|			|---training_data_collection.ipynb\
-|		|---scalers\
-|			|---alphabet_normalizer.pkl\
-|			|---amazon_normalizer.pkl\
-|			|---apple_normalizer.pkl\
-|			|---meta_normalizer.pkl\
-|			|---microsoft_normalizer.pkl\
-|			|---nvidia_normalizer.pkl\
-|			|---tesla_normalizer.pkl\
-|		|---slides\
-|			|---tickertrend.pdf\
-|		|---venv\
-|		|---README.md\
-|		|---requirements-dev.in\
-|		|---requirements-dev.txt\
-|		|---requirements.in\
-|		|---requirements.txt
+|&nbsp;&nbsp;&nbsp;|---app\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---__init__.py\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---app.py\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---backend.py\
+|&nbsp;&nbsp;&nbsp;|---data\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---clean\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---alphabet_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---amazon_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---apple_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---meta_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---meta_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---nvidia_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---tesla_training_data.csv\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---raw\
+|&nbsp;&nbsp;&nbsp;|---images\
+|&nbsp;&nbsp;&nbsp;|---models\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---alphabet_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---amazon_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---apple_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---meta_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---microsoft_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---nvidia_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---tesla_stacking_regressor_model.pkl\
+|&nbsp;&nbsp;&nbsp;|---notebooks\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---__init__.py\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---config.py\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---functions.py\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---model_training.ipynb\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---training_data_collection.ipynb\
+|&nbsp;&nbsp;&nbsp;|---scalers\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---alphabet_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---amazon_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---apple_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---meta_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---microsoft_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---nvidia_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---tesla_normalizer.pkl\
+|&nbsp;&nbsp;&nbsp;|---slides\
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---tickertrend.pdf\
+|&nbsp;&nbsp;&nbsp;|---venv\
+|&nbsp;&nbsp;&nbsp;|---README.md\
+|&nbsp;&nbsp;&nbsp;|---requirements-dev.in\
+|&nbsp;&nbsp;&nbsp;|---requirements-dev.txt\
+|&nbsp;&nbsp;&nbsp;|---requirements.in\
+|&nbsp;&nbsp;&nbsp;|---requirements.txt
 
 
