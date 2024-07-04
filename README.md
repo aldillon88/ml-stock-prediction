@@ -10,12 +10,12 @@ Python 3.9.6
 Jupyter Notebook 7.2.1
 
 #### Packages Used
-General purpose: `os`, `ssl`, `certifi`, `json`, `time`, `urllib`, `sys`, `pathlib`, `joblib`, `pickle`, `tempfile`
-Data Manipulation: `pandas`, `numpy`, `datetime`
-Data Visualization: `plotly`
-Machine Learning: `sklearn`, `optuna`, `xgboost`
-User Interface: `streamlit`
-Other: `IPython`, `kaleido`
+General purpose: `os`, `ssl`, `certifi`, `json`, `time`, `urllib`, `sys`, `pathlib`, `joblib`, `pickle`, `tempfile`. 
+Data Manipulation: `pandas`, `numpy`, `datetime`. 
+Data Visualization: `plotly`. 
+Machine Learning: `sklearn`, `optuna`, `xgboost`. 
+User Interface: `streamlit`. 
+Other: `IPython`, `kaleido`. 
 
 #### Installation
 1. Clone this repository:
