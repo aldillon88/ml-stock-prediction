@@ -25,7 +25,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from notebooks import config
-from notebooks.functions import trim_and_lower
 
 
 # Create a custom SSL context
