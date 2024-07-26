@@ -1,1 +1,5 @@
 notebooks/config.py
+requirements.in
+requirements-dev.in
+requirements-dev.txt
+.DS_Store
