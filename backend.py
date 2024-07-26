@@ -247,8 +247,8 @@ def predict(ticker, df):
 		'TSLA': 'tesla_normalizer.pkl'
 	}
 
-	scaler = joblib.load('../scalers/' + scalers[ticker])
-	model = joblib.load('../models/' + models[ticker])
+	scaler = joblib.load('scalers/' + scalers[ticker])
+	model = joblib.load('models/' + models[ticker])
 
 	# Normalize features
 	features_norm = scaler.transform(features)
