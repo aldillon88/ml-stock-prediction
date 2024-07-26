@@ -1,4 +1,5 @@
 notebooks/config.py
+.streamlit/secrets.toml
 requirements.in
 requirements-dev.in
 requirements-dev.txt

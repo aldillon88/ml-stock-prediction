@@ -24,14 +24,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from notebooks import config
+#from notebooks import config
 
 
 # Create a custom SSL context
 context = ssl.create_default_context(cafile=certifi.where())
 
 # Now you can access the environment variables
-apikey = os.getenv('FMP_SECRET_KEY')
+#apikey = os.getenv('FMP_SECRET_KEY')
+
+# Access the API key from Streamlit secrets
+#apikey = st.secrets["api"]["FMP_SECRET_KEY"]
+apikey = st.secrets["FMP_SECRET_KEY"]
 
 # Other variables
 indicators = ['dema', 'tema', 'williams', 'rsi']
